@@ -5,6 +5,25 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.0.0/).
 
 ---
 
+## [1.2.0] — 2026-06-04
+
+### Panel de administración local (`/admin`)
+
+#### Agregado
+
+- **`app/admin`** — panel de administración accesible en `http://localhost:3000/admin` exclusivamente en modo desarrollo (`NODE_ENV === 'development'`); en producción devuelve 404
+- **Formulario interactivo** para agregar productos con campos: slug (sanitizado automáticamente), nombre, descripción, categoría, estado y variantes de idioma dinámicas (agregar / eliminar)
+- **Preview en tiempo real** del `ProductCard` con los datos ingresados, incluyendo animaciones de ícono y badge de categoría
+- **Auto-fill de etiqueta de idioma** — al tipear un código de idioma conocido (`es`, `pt`, `en`, `fr`, etc.) completa la etiqueta automáticamente
+- **Visualización de rutas** — sección "Rutas que se generarán" muestra los rewrites y el redirect antes de confirmar
+- **Server Action `addProduct`** (`app/admin/actions.ts`) que escribe directamente en:
+  - `config/products.config.ts` — inserta el nuevo producto con el mismo formato de indentación del archivo
+  - `vercel.json` — agrega rewrites (con deduplicación) y el redirect raíz si aplica para portales multi-idioma
+- **Validaciones**: slug único, formato alfanumérico, campos requeridos, URL de Vercel con `https://`
+- Feedback de éxito / error inline con instrucciones de próximos pasos al confirmar
+
+---
+
 ## [1.1.0] — 2026-06-04
 
 ### Rediseño UI, dark/light mode, animaciones y fix de aislamiento de portales

@@ -2,40 +2,99 @@
 
 > Referencia técnica: [moob-products-hub.md](./moob-products-hub.md)
 
-Este documento describe paso a paso cómo incorporar un nuevo portal al Moob Products HUB. El proceso completo toma menos de 10 minutos y **no requiere tocar DNS**.
+Hay dos formas de incorporar un nuevo portal. El panel `/admin` es el camino rápido cuando se trabaja en local; el procedimiento manual es el fallback para cualquier otro contexto.
 
 ---
 
 ## Índice
 
-- [Procedimiento — Agregar un producto nuevo al Products HUB](#procedimiento--agregar-un-producto-nuevo-al-products-hub)
-  - [Índice](#índice)
-  - [Requisitos previos](#requisitos-previos)
-  - [Paso 1 — Configurar el portal hijo (basePath)](#paso-1--configurar-el-portal-hijo-basepath)
-  - [Paso 2 — Agregar el rewrite en vercel.json](#paso-2--agregar-el-rewrite-en-verceljson)
-  - [Paso 3 — Registrar el producto en products.config.ts](#paso-3--registrar-el-producto-en-productsconfigts)
-  - [Paso 4 — (Opcional) Portal multi-idioma](#paso-4--opcional-portal-multi-idioma)
+- [Requisitos previos (ambos métodos)](#requisitos-previos-ambos-métodos)
+- [Método 1 — Panel /admin](#método-1--panel-admin-solo-en-dev)
+- [Método 2 — Procedimiento manual](#método-2--procedimiento-manual)
+  - [Paso 1 — basePath en el portal hijo](#paso-1--configurar-el-portal-hijo-basepath)
+  - [Paso 2 — Rewrite en vercel.json](#paso-2--agregar-el-rewrite-en-verceljson)
+  - [Paso 3 — Registro en products.config.ts](#paso-3--registrar-el-producto-en-productsconfigts)
+  - [Paso 4 — Portal multi-idioma (opcional)](#paso-4--opcional-portal-multi-idioma)
   - [Paso 5 — Commit y deploy](#paso-5--commit-y-deploy)
   - [Paso 6 — Verificación](#paso-6--verificación)
-  - [Referencia rápida de tipos](#referencia-rápida-de-tipos)
-  - [Checklist de incorporación](#checklist-de-incorporación)
+- [Referencia rápida de tipos](#referencia-rápida-de-tipos)
+- [Checklist de incorporación](#checklist-de-incorporación)
 
 ---
 
-## Requisitos previos
-
-Antes de empezar, asegurarse de contar con:
+## Requisitos previos (ambos métodos)
 
 - El portal hijo ya deployado en Vercel (ej: `mi-portal-demo.vercel.app`)
-- Acceso al repositorio `moob-products-hub`
 - Acceso al repositorio del portal hijo para modificar su `next.config.js`
-- Definido el **slug** que usará en el hub (ej: `miportal`) — solo minúsculas, sin espacios ni caracteres especiales
+- Definido el **slug** que usará en el hub (ej: `miportal`) — solo minúsculas y números, sin espacios
 
 ---
 
-## Paso 1 — Configurar el portal hijo (basePath)
+## Método 1 — Panel /admin _(solo en dev)_
 
-En el repositorio del **portal hijo**, agregar el `basePath` en su `next.config.js`. Esto es obligatorio para que los links internos, assets e imágenes resuelvan correctamente cuando el portal se sirve bajo una subruta del hub.
+> Disponible únicamente con `npm run dev`. En producción la ruta devuelve 404.
+
+Este método escribe `products.config.ts` y `vercel.json` automáticamente desde un formulario con preview en tiempo real.
+
+### Paso 1 — basePath en el portal hijo
+
+Antes de abrir el panel, configurar el `basePath` en el portal hijo y hacer deploy:
+
+```js
+// next.config.js del portal hijo
+const nextConfig = {
+  basePath: '/miportal',        // un idioma
+  // basePath: '/miportal/es', // multi-idioma: un deploy por variante
+}
+module.exports = nextConfig
+```
+
+### Paso 2 — Abrir el panel
+
+Con el hub corriendo en local:
+
+```
+http://localhost:3000/admin
+```
+
+### Paso 3 — Completar el formulario
+
+| Campo | Qué ingresar |
+|---|---|
+| **Slug** | Identificador único, solo minúsculas y números (ej: `totalfitness`) |
+| **Nombre visible** | El nombre que aparece en la card del catálogo |
+| **Descripción** | Una oración descriptiva |
+| **Categoría** | gaming / cooking / esoteric / comics / fitness / viajes / mujer / other |
+| **Estado** | `live`, `wip` o `coming-soon` |
+| **Variantes** | Una fila por idioma: código (`es`), etiqueta (auto-completa), URL Vercel del portal |
+
+Para portales multi-idioma, usar **Agregar idioma** para sumar filas. Marcar el checkbox de redirect si se quiere que `/{slug}` redirija al primer idioma.
+
+La sección **"Rutas que se generarán"** muestra los rewrites antes de confirmar.
+
+### Paso 4 — Guardar y hacer push
+
+Hacer clic en **Guardar producto**. El panel escribe los dos archivos directamente.
+
+Luego:
+
+```bash
+git add vercel.json config/products.config.ts
+git commit -m "feat: add <nombre del portal> portal"
+git push
+```
+
+Vercel hace el deploy automáticamente. **No hay que tocar DNS.**
+
+---
+
+## Método 2 — Procedimiento manual
+
+Usar cuando no se está en entorno de desarrollo local o se necesita control total sobre los cambios.
+
+### Paso 1 — Configurar el portal hijo (basePath)
+
+En el repositorio del **portal hijo**, agregar el `basePath` en su `next.config.js`. Obligatorio para que los links internos, assets e imágenes resuelvan correctamente cuando el portal se sirve bajo una subruta del hub.
 
 ```js
 // next.config.js del portal hijo
@@ -54,9 +113,9 @@ Hacer deploy del portal hijo con este cambio antes de continuar.
 
 ---
 
-## Paso 2 — Agregar el rewrite en vercel.json
+### Paso 2 — Agregar el rewrite en vercel.json
 
-En el repositorio `moob-products-hub`, abrir `vercel.json` y agregar una nueva entrada dentro del array `rewrites`.
+Abrir `vercel.json` y agregar una nueva entrada dentro del array `rewrites`.
 
 **Portal de un solo idioma:**
 
@@ -80,42 +139,9 @@ En el repositorio `moob-products-hub`, abrir `vercel.json` y agregar una nueva e
 - Usar solo `rewrites`, nunca `redirects` — los redirects cambian la URL visible al usuario
 - El `:path*` al final es obligatorio para que el proxy funcione en todas las subrutas
 
-**Ejemplo del archivo completo con el nuevo portal agregado:**
-
-```json
-{
-  "rewrites": [
-    {
-      "source": "/locoporlacocina/es/:path*",
-      "destination": "https://loco-por-la-cocina-es.vercel.app/:path*"
-    },
-    {
-      "source": "/locoporlacocina/pt/:path*",
-      "destination": "https://loco-por-la-cocina-pt.vercel.app/:path*"
-    },
-    {
-      "source": "/locoporlacocina/en/:path*",
-      "destination": "https://loco-por-la-cocina-en.vercel.app/:path*"
-    },
-    {
-      "source": "/teamgamers/:path*",
-      "destination": "https://team-gamers-demo.vercel.app/:path*"
-    },
-    {
-      "source": "/clubdeenergia/:path*",
-      "destination": "https://club-de-energia.vercel.app/:path*"
-    },
-    {
-      "source": "/miportal/:path*",
-      "destination": "https://mi-portal-demo.vercel.app/:path*"
-    }
-  ]
-}
-```
-
 ---
 
-## Paso 3 — Registrar el producto en products.config.ts
+### Paso 3 — Registrar el producto en products.config.ts
 
 Abrir `config/products.config.ts` y agregar un nuevo objeto al array `products`.
 
@@ -124,7 +150,6 @@ Abrir `config/products.config.ts` y agregar un nuevo objeto al array `products`.
   slug: 'miportal',
   name: 'Nombre visible del portal',
   description: 'Descripción breve del portal (una oración).',
-  operator: 'Nombre del operador o cliente',
   category: 'fitness',   // ver categorías disponibles abajo
   status: 'live',        // 'live' | 'wip' | 'coming-soon'
   variants: [
@@ -133,21 +158,21 @@ Abrir `config/products.config.ts` y agregar un nuevo objeto al array `products`.
 }
 ```
 
-**Categorías disponibles:** `'gaming'` | `'cooking'` | `'esoteric'` | `'comics'` | `'fitness'` | `'other'`
+**Categorías disponibles:** `'gaming'` | `'cooking'` | `'esoteric'` | `'comics'` | `'fitness'` | `'viajes'` | `'mujer'` | `'other'`
 
 **Estados disponibles:**
 
-| Valor         | Descripción                      | Color en UI |
-| ------------- | -------------------------------- | ----------- |
-| `live`        | Portal en producción y funcional | Verde       |
-| `wip`         | En desarrollo activo             | Amarillo    |
-| `coming-soon` | Anunciado, aún no disponible     | Gris        |
+| Valor | Descripción | Color en UI |
+|---|---|---|
+| `live` | Portal en producción y funcional | Verde |
+| `wip` | En desarrollo activo | Amarillo |
+| `coming-soon` | Anunciado, aún no disponible | Gris |
 
 ---
 
-## Paso 4 — (Opcional) Portal multi-idioma
+### Paso 4 — (Opcional) Portal multi-idioma
 
-Si el portal tiene múltiples idiomas, cada idioma es un proyecto Vercel separado. Se siguen los mismos pasos anteriores pero se repiten por variante.
+Si el portal tiene múltiples idiomas, cada idioma es un proyecto Vercel separado.
 
 **vercel.json** — una entrada por idioma (rutas específicas primero):
 
@@ -167,7 +192,7 @@ const nextConfig = { basePath: '/miportal/es' }
 const nextConfig = { basePath: '/miportal/pt' }
 ```
 
-**Redirect desde la raíz sin idioma** (agregar en la sección `redirects` de `vercel.json`):
+**Redirect desde la raíz sin idioma** (sección `redirects` de `vercel.json`):
 
 ```json
 {
@@ -188,22 +213,19 @@ const nextConfig = { basePath: '/miportal/pt' }
   slug: 'miportal',
   name: 'Mi Portal',
   description: 'Descripción del portal.',
-  operator: 'Operador',
   category: 'other',
   status: 'live',
   variants: [
-    { lang: 'es', label: 'Español',    path: '/miportal/es' },
-    { lang: 'pt', label: 'Português',  path: '/miportal/pt' },
-    { lang: 'en', label: 'English',    path: '/miportal/en' },
+    { lang: 'es', label: 'Español',   path: '/miportal/es' },
+    { lang: 'pt', label: 'Português', path: '/miportal/pt' },
+    { lang: 'en', label: 'English',   path: '/miportal/en' },
   ],
 }
 ```
 
 ---
 
-## Paso 5 — Commit y deploy
-
-Solo hay que commitear los cambios del hub. El portal hijo ya tiene su propio deploy.
+### Paso 5 — Commit y deploy
 
 ```bash
 git add vercel.json config/products.config.ts
@@ -211,20 +233,20 @@ git commit -m "feat: add <nombre del portal> portal"
 git push
 ```
 
-Vercel detecta el push y hace el deploy automáticamente a `product.dev.moob.club`. **No hay que tocar DNS.**
+Vercel detecta el push y hace el deploy automáticamente. **No hay que tocar DNS.**
 
 ---
 
-## Paso 6 — Verificación
+### Paso 6 — Verificación
 
 Después del deploy (1-2 minutos), verificar:
 
 1. **Catálogo**: el nuevo portal aparece en `product.dev.moob.club` con el card correcto
 2. **Index**: `product.dev.moob.club/miportal` carga la home del portal
-3. **Subrutas**: navegar a una ruta interna del portal (ej: `/miportal/seccion`) y confirmar que carga
+3. **Subrutas**: navegar a una ruta interna (ej: `/miportal/seccion`) y confirmar que carga
 4. **Assets**: imágenes, fuentes e íconos se cargan sin errores 404
-5. **Portal original**: el portal en su `.vercel.app` original sigue funcionando sin cambios
-6. **Multi-idioma** (si aplica): cada variante de idioma es accesible desde su path
+5. **Portal original**: el portal en su `.vercel.app` sigue funcionando sin cambios
+6. **Multi-idioma** (si aplica): cada variante es accesible desde su path
 
 ---
 
@@ -232,18 +254,17 @@ Después del deploy (1-2 minutos), verificar:
 
 ```ts
 export type Language = {
-  lang: string // código de idioma: 'es', 'pt', 'en', etc.
-  label: string // texto visible en el botón: 'Español', 'Português', etc.
-  path: string // path completo: '/miportal' o '/miportal/es'
+  lang: string    // código de idioma: 'es', 'pt', 'en', etc.
+  label: string   // texto visible en el botón: 'Español', 'Português', etc.
+  path: string    // path completo: '/miportal' o '/miportal/es'
 }
 
 export type Product = {
-  slug: string // identificador único, sin espacios
-  name: string // nombre visible en el catálogo
-  description: string // descripción breve
-  operator: string // cliente u operador (ej: 'Claro', 'Movistar')
-  category: 'gaming' | 'cooking' | 'esoteric' | 'comics' | 'fitness' | 'other'
-  variants: Language[] // al menos una variante
+  slug: string
+  name: string
+  description: string
+  category: 'gaming' | 'cooking' | 'esoteric' | 'comics' | 'fitness' | 'viajes' | 'mujer' | 'other'
+  variants: Language[]
   status: 'live' | 'wip' | 'coming-soon'
 }
 ```
@@ -253,13 +274,12 @@ export type Product = {
 ## Checklist de incorporación
 
 - [ ] Portal hijo deployado en Vercel y accesible en su `.vercel.app`
-- [ ] `basePath` agregado en `next.config.js` del portal hijo y redeploy hecho
-- [ ] Rewrite agregado en `vercel.json` del hub (con `:path*`)
-- [ ] Producto registrado en `config/products.config.ts` (slug, name, category, status, variants)
-- [ ] (Multi-idioma) Un rewrite por idioma, con rutas específicas primero
+- [ ] `basePath` configurado en `next.config.js` del portal hijo y redeploy hecho
+- [ ] **Método /admin**: formulario completado y guardado → ir directo al `git push`
+- [ ] **Método manual**: rewrite en `vercel.json` + producto en `products.config.ts`
+- [ ] (Multi-idioma) Un rewrite por idioma con rutas específicas primero
 - [ ] (Multi-idioma) Redirect desde la raíz sin idioma configurado
-- [ ] Commit pusheado: `git push` a `main`
-- [ ] Deploy de Vercel completado (verificar en Vercel dashboard)
+- [ ] `git push` a `main` y deploy de Vercel completado
 - [ ] Card visible en `product.dev.moob.club`
 - [ ] Navegación en subrutas funcional
 - [ ] Assets cargando correctamente
