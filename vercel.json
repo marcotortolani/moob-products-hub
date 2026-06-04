@@ -1,0 +1,31 @@
+{
+  "redirects": [
+    {
+      "source": "/locoporlacocina",
+      "destination": "/locoporlacocina/es",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/locoporlacocina/es/:path*",
+      "destination": "https://loco-por-la-cocina-es.vercel.app/:path*"
+    },
+    {
+      "source": "/locoporlacocina/pt/:path*",
+      "destination": "https://loco-por-la-cocina-pt.vercel.app/:path*"
+    },
+    {
+      "source": "/locoporlacocina/en/:path*",
+      "destination": "https://loco-por-la-cocina-en.vercel.app/:path*"
+    },
+    {
+      "source": "/teamgamers/:path*",
+      "destination": "https://team-gamers-demo.vercel.app/:path*"
+    },
+    {
+      "source": "/clubdeenergia/:path*",
+      "destination": "https://club-de-energia-test.vercel.app/:path*"
+    }
+  ]
+}
