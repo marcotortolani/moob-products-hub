@@ -17,6 +17,7 @@ const categoryConfig: Record<
     badge: string
     border: string
     iconBg: string
+    cardBg: string
     animation: string
   }
 > = {
@@ -26,6 +27,7 @@ const categoryConfig: Record<
     badge: 'bg-purple-500/10 text-purple-700 border-purple-400/30 dark:text-purple-300 dark:border-purple-500/25',
     border: 'hover:border-purple-400/50 dark:hover:border-purple-500/40',
     iconBg: 'bg-purple-500/10 text-purple-600 dark:text-purple-400',
+    cardBg: 'bg-purple-500/[0.04] dark:bg-purple-500/[0.07]',
     animation: 'icon-wiggle 0.65s ease-in-out infinite',
   },
   cooking: {
@@ -34,6 +36,7 @@ const categoryConfig: Record<
     badge: 'bg-orange-500/10 text-orange-700 border-orange-400/30 dark:text-orange-300 dark:border-orange-500/25',
     border: 'hover:border-orange-400/50 dark:hover:border-orange-500/40',
     iconBg: 'bg-orange-500/10 text-orange-600 dark:text-orange-400',
+    cardBg: 'bg-orange-500/[0.04] dark:bg-orange-500/[0.07]',
     animation: 'icon-bounce-fun 0.70s ease-in-out infinite',
   },
   esoteric: {
@@ -42,6 +45,7 @@ const categoryConfig: Record<
     badge: 'bg-yellow-500/10 text-yellow-700 border-yellow-400/30 dark:text-yellow-300 dark:border-yellow-500/25',
     border: 'hover:border-yellow-400/50 dark:hover:border-yellow-500/40',
     iconBg: 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400',
+    cardBg: 'bg-yellow-500/[0.04] dark:bg-yellow-500/[0.07]',
     animation: 'icon-spin-slow 1.40s linear infinite',
   },
   comics: {
@@ -50,6 +54,7 @@ const categoryConfig: Record<
     badge: 'bg-blue-500/10 text-blue-700 border-blue-400/30 dark:text-blue-300 dark:border-blue-500/25',
     border: 'hover:border-blue-400/50 dark:hover:border-blue-500/40',
     iconBg: 'bg-blue-500/10 text-blue-600 dark:text-blue-400',
+    cardBg: 'bg-blue-500/[0.04] dark:bg-blue-500/[0.07]',
     animation: 'icon-tada 0.75s ease-in-out infinite',
   },
   fitness: {
@@ -58,6 +63,7 @@ const categoryConfig: Record<
     badge: 'bg-green-500/10 text-green-700 border-green-400/30 dark:text-green-300 dark:border-green-500/25',
     border: 'hover:border-green-400/50 dark:hover:border-green-500/40',
     iconBg: 'bg-green-500/10 text-green-600 dark:text-green-400',
+    cardBg: 'bg-green-500/[0.04] dark:bg-green-500/[0.07]',
     animation: 'icon-pump 0.55s ease-in-out infinite',
   },
   viajes: {
@@ -66,6 +72,7 @@ const categoryConfig: Record<
     badge: 'bg-sky-500/10 text-sky-700 border-sky-400/30 dark:text-sky-300 dark:border-sky-500/25',
     border: 'hover:border-sky-400/50 dark:hover:border-sky-500/40',
     iconBg: 'bg-sky-500/10 text-sky-600 dark:text-sky-400',
+    cardBg: 'bg-sky-500/[0.04] dark:bg-sky-500/[0.07]',
     animation: 'icon-bounce-fun 0.70s ease-in-out infinite',
   },
   mujer: {
@@ -74,6 +81,7 @@ const categoryConfig: Record<
     badge: 'bg-pink-500/10 text-pink-700 border-pink-400/30 dark:text-pink-300 dark:border-pink-500/25',
     border: 'hover:border-pink-400/50 dark:hover:border-pink-500/40',
     iconBg: 'bg-pink-500/10 text-pink-600 dark:text-pink-400',
+    cardBg: 'bg-pink-500/[0.04] dark:bg-pink-500/[0.07]',
     animation: 'icon-pump 0.55s ease-in-out infinite',
   },
   other: {
@@ -82,6 +90,7 @@ const categoryConfig: Record<
     badge: 'bg-zinc-500/10 text-zinc-600 border-zinc-400/30 dark:text-zinc-300 dark:border-zinc-500/25',
     border: 'hover:border-zinc-400/50 dark:hover:border-zinc-500/40',
     iconBg: 'bg-zinc-500/10 text-zinc-500 dark:text-zinc-400',
+    cardBg: 'bg-zinc-500/[0.03] dark:bg-zinc-500/[0.06]',
     animation: 'icon-spin-once 0.50s cubic-bezier(0.4, 0, 0.2, 1)',
   },
 }
@@ -101,7 +110,8 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Card
       className={cn(
-        'flex flex-col gap-0 bg-card border-border/60',
+        'flex flex-col gap-0 border-border/60',
+        cat.cardBg,
         'transition-all duration-200 cursor-default',
         'shadow-sm hover:shadow-lg dark:hover:shadow-black/40',
         'hover:-translate-y-0.5',
