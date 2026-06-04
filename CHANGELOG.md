@@ -12,6 +12,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.0.0/).
 Primera versión del Moob Products HUB.
 
 #### Agregado
+
 - Proyecto Next.js 16 (App Router) con TypeScript y Tailwind CSS v4
 - shadcn/ui configurado con tema dark personalizado (OKLCH, acento azul eléctrico)
 - `config/products.config.ts` — catálogo de portales con tipos `Product` y `Language`
@@ -29,6 +30,7 @@ Primera versión del Moob Products HUB.
 - Deploy en Vercel + dominio `product.dev.moob.club` conectado
 
 #### Decisiones técnicas
+
 - `operator` eliminado del modelo de datos — todos los portales son entornos de demo/testing
 - shadcn Button usa `@base-ui/react`; los links de variante usan `buttonVariants` directo sobre `<Link>`
 - `CatalogView` es client component; `page.tsx` es server component estático
