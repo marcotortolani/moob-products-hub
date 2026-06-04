@@ -7,7 +7,7 @@ export default function Footer() {
       <Separator className="mb-6 bg-border/40" />
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <span className="text-xs text-muted-foreground/60">
-          Media Moob — Demo Portals
+          Media Moob — Product HUB
         </span>
         <span className="text-xs text-muted-foreground/40 font-mono">
           v{pkg.version}
