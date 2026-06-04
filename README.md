@@ -28,7 +28,7 @@ Actúa como proxy transparente: el usuario navega bajo un único dominio sin que
 
 ## Arquitectura
 
-```
+```text
 product.dev.moob.club
         │
         ▼
@@ -97,7 +97,7 @@ const nextConfig = { basePath: '/mportal' }
 
 ## Estructura de carpetas
 
-```
+```text
 moob-products-hub/
 ├── app/
 │   ├── layout.tsx
